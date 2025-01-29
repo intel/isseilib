@@ -1,0 +1,5 @@
+# Intel(R) Silicon Security Engine Interface Library
+
+ISSEI Library is a C library to access Intel(R) Silicon Security Engine firmware via
+a Intel(R) Silicon Security Engine Interface.
+ISSEI Library provides a single cross-platform API to access to ISSEI devices on Linux and Windows.
