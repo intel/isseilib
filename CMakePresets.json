@@ -1,0 +1,68 @@
+﻿{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "windows-base",
+      "description": "Target Windows with the Visual Studio development environment.",
+      "hidden": true,
+      "generator": "Visual Studio 16 2019",
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": "YES",
+        "BUILD_MSVC_RUNTIME_STATIC": "YES",
+        "BUILD_USE_CONAN": "YES"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Debug",
+      "displayName": "x64 Debug",
+      "description": "Target Windows (64-bit) with the Visual Studio development environment. (Debug)",
+      "inherits": "windows-base",
+      "binaryDir": "${sourceDir}/Debug",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "Release",
+      "displayName": "x64 Release",
+      "description": "Target Windows (64-bit) with the Visual Studio development environment. (Release)",
+      "inherits": "Debug",
+      "binaryDir": "${sourceDir}/Release",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "name": "ReleaseAll",
+      "displayName": "x64 Release All",
+      "description": "Target Windows (64-bit) with the Visual Studio development environment with test and samples. (Release)",
+      "inherits": "Release",
+      "cacheVariables": {
+        "BUILD_SAMPLES": "YES",
+        "BUILD_TESTS": "YES"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "Debug",
+      "configurePreset": "Debug",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Release",
+      "configurePreset": "Release",
+      "configuration": "Release"
+    },
+    {
+      "name": "ReleaseAll",
+      "configurePreset": "ReleaseAll",
+      "configuration": "Release"
+    }
+  ]
+}
