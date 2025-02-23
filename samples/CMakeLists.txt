@@ -17,3 +17,8 @@ add_executable(isseilib_cpp_basic_flow cpp_basic_flow.cpp)
 target_compile_options(isseilib_cpp_basic_flow PRIVATE ${COMPILE_OPTIONS})
 target_link_libraries(isseilib_cpp_basic_flow isseilib)
 install(TARGETS isseilib_cpp_basic_flow RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+add_executable(isseilib_spdm_get_version spdm_get_version.c)
+target_compile_options(isseilib_spdm_get_version PRIVATE ${COMPILE_OPTIONS})
+target_link_libraries(isseilib_spdm_get_version isseilib)
+install(TARGETS isseilib_spdm_get_version RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
