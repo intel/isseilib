@@ -73,7 +73,7 @@ BEGIN
             VALUE "FileDescription", "Intel(R) Silicon Security Engine Interface Library"
             VALUE "FileVersion", "@ISSEI_VERSION_STRING@"
             VALUE "InternalName", "iISSEI_lib"
-            VALUE "LegalCopyright", "Copyright (c) 2023, Intel Corporation."
+            VALUE "LegalCopyright", "Copyright (C) 2023, Intel Corporation."
             VALUE "OriginalFilename", "isseilib.dll"
             VALUE "ProductName", "Intel(R) Silicon Security Engine Interface Library"
             VALUE "ProductVersion", "@ISSEI_VERSION_STRING@"
