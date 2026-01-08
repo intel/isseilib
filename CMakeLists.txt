@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (C) 2023-2025 Intel Corporation
+# Copyright (C) 2023-2026 Intel Corporation
 cmake_minimum_required(VERSION 3.15)
 project(issei)
 
@@ -52,7 +52,7 @@ set(COMPILE_OPTIONS_NX
     -D_GNU_SOURCE
     "$<$<CONFIG:Debug>:-DDEBUG;-D_DEBUG>"
     "$<$<CONFIG:Debug>:-O0;-g3;-ggdb>"
-    "$<$<CONFIG:Release>:-O2;-D_FORTIFY_SOURCE=2>"
+    "$<$<CONFIG:Release>:-O2;-U_FORTIFY_SOURCE;-D_FORTIFY_SOURCE=2>"
 )
 include(CheckCCompilerFlag)
 check_c_compiler_flag(-Wshadow WARNING_SHADOW)
