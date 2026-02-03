@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /*
- * Copyright (C) 2023-2025 Intel Corporation
+ * Copyright (C) 2023-2026 Intel Corporation
  */
 
 #include <dirent.h>
@@ -495,9 +495,11 @@ uint32_t __isseilib_get_client_list(IN OUT struct issei_int_handle *int_handle,
 					       "flags", 0, buf, &buf_size);
 		if (rc)
 		{
+			/* Not implemented in driver now
 			ERRPRINT(int_handle, "Error in sysfs read, error: %d\n", rc);
 			status = ISSEILIB_ERROR_GENERAL;
-			goto out;
+			goto out;*/
+			buf[0] = '\0';
 		}
 		client_properties[i].flags = (uint32_t)strtoul(buf, NULL, 10);
 	}
