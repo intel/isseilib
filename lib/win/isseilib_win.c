@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /*
- * Copyright (C) 2023-2024 Intel Corporation
+ * Copyright (C) 2023-2026 Intel Corporation
  */
 #include <windows.h>
 #include <initguid.h>
@@ -110,7 +110,7 @@ static uint32_t begin_overlapped(IN bool read_op, IN struct issei_int_handle* in
 		}
 		else
 		{
-			DBGPRINT(int_handle, "Pending in ReadFile/Write");
+			DBGPRINT(int_handle, "Pending in ReadFile/Write\n");
 			status = ISSEILIB_SUCCESS;
 		}
 	}
@@ -191,7 +191,7 @@ static uint32_t get_device_path(IN struct issei_int_handle* int_handle, IN LPCGU
 	if (interface_guid == NULL || path == NULL || pathSize < 1)
 	{
 		status = ISSEILIB_ERROR_GENERAL;
-		ERRPRINT(int_handle, "One of the parameters was illegal");
+		ERRPRINT(int_handle, "One of the parameters was illegal\n");
 		goto Cleanup;
 	}
 
@@ -212,7 +212,7 @@ static uint32_t get_device_path(IN struct issei_int_handle* int_handle, IN LPCGU
 	if (deviceInterfaceListLength <= 1)
 	{
 		status = ISSEILIB_ERROR_DEV_NOT_FOUND;
-		ERRPRINT(int_handle, "CM_Get_Device_Interface_List_SizeA returned status %d", GetLastError());
+		ERRPRINT(int_handle, "CM_Get_Device_Interface_List_SizeA returned status %d\n", GetLastError());
 		goto Cleanup;
 	}
 
@@ -242,7 +242,7 @@ static uint32_t get_device_path(IN struct issei_int_handle* int_handle, IN LPCGU
 	if (hr)
 	{
 		status = ISSEILIB_ERROR_GENERAL;
-		ERRPRINT(int_handle, "Error: strcpy_s failed with error 0x%x", hr);
+		ERRPRINT(int_handle, "Error: strcpy_s failed with error 0x%x\n", hr);
 		goto Cleanup;
 	}
 
