@@ -212,7 +212,7 @@ static uint32_t get_device_path(IN struct issei_int_handle* int_handle, IN LPCGU
 	if (deviceInterfaceListLength <= 1)
 	{
 		status = ISSEILIB_ERROR_DEV_NOT_FOUND;
-		ERRPRINT(int_handle, "CM_Get_Device_Interface_List_SizeA returned status %d\n", GetLastError());
+		ERRPRINT(int_handle, "No device interfaces found (list length: %lu).\n", deviceInterfaceListLength);
 		goto Cleanup;
 	}
 
