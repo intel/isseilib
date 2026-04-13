@@ -190,7 +190,7 @@ static uint32_t get_device_path(IN struct issei_int_handle* int_handle, IN LPCGU
 
 	if (interface_guid == NULL || path == NULL || pathSize < 1)
 	{
-		status = ISSEILIB_ERROR_GENERAL;
+		status = ISSEILIB_ERROR_INVALID_PARAM;
 		ERRPRINT(int_handle, "One of the parameters was illegal\n");
 		goto Cleanup;
 	}
