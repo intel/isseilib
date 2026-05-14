@@ -16,10 +16,11 @@
 #include "internal.h"
 #include "isseilib_linux.h"
 
-static int __issei_sysfs_create_path(struct issei_int_handle *int_handle, const char *dir, const char *fname,
-				     char *path, size_t path_size)
+static int __issei_sysfs_create_path(struct issei_int_handle *int_handle, const char *dir,
+				     const char *fname, char *path, size_t path_size)
 {
 	char *device;
+	int ret;
 
 	if (int_handle->device_path) {
 		device = strstr(int_handle->device_path, ISSEILIB_LINUX_DEF_DEV_PREFIX);
@@ -34,15 +35,14 @@ static int __issei_sysfs_create_path(struct issei_int_handle *int_handle, const 
 	}
 
 	if (dir)
-	{
-		if (snprintf(path, path_size, "/sys/class/issei/%s/%s/%s", device, dir, fname) < 0)
-			return -EINVAL;
-	}
+		ret = snprintf(path, path_size, "/sys/class/issei/%s/fw_clients/%s/%s",
+			       device, dir, fname);
 	else
-	{
-		if (snprintf(path, path_size, "/sys/class/issei/%s/%s", device, fname) < 0)
-			return -EINVAL;
-	}
+		ret = snprintf(path, path_size, "/sys/class/issei/%s/%s", device, fname);
+	if (ret < 0)
+		return -EINVAL;
+	if ((size_t)ret >= path_size)
+		return -ENAMETOOLONG;
 	path[path_size - 1] = '\0';
 
 	return 0;
@@ -88,20 +88,21 @@ int __issei_sysfs_read(struct issei_int_handle *int_handle,
 	return 0;
 }
 
-static const char *__issei_fw_cl = "fw_client:";
 static int __issei_sysfs_fw_client_filter(const struct dirent *dent)
 {
-	return (strlen(dent->d_name) >= strlen(__issei_fw_cl)) &&
-	       (strncmp(dent->d_name, __issei_fw_cl, strlen(__issei_fw_cl)) == 0);
-}
+	char *endptr = (char *)dent->d_name;
 
+	return (dent->d_type == DT_DIR || dent->d_type == DT_UNKNOWN)  &&
+	       (strtol(dent->d_name, &endptr, 10) > 0) &&
+	       (*endptr == '\0');
+}
 
 int __issei_sysfs_get_client_list(struct issei_int_handle *int_handle, struct dirent ***namelist)
 {
 	char path[PATH_MAX];
 	int ret;
 
-	ret = __issei_sysfs_create_path(int_handle, NULL, "", path, PATH_MAX);
+	ret = __issei_sysfs_create_path(int_handle, NULL, "fw_clients", path, PATH_MAX);
 	if (ret)
 		return ret;
 
