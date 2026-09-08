@@ -183,6 +183,12 @@ uint32_t __issei_reopen(IN OUT struct issei_int_handle *int_handle)
 	close(int_handle->handle);
 	int_handle->handle = ISSEILIB_INVALID_DEVICE_HANDLE;
 
+	if (int_handle->device_path == NULL)
+	{
+		ERRPRINT(int_handle, "Error in reopen, device_path is NULL\n");
+		return ISSEILIB_ERROR_GENERAL;
+	}
+
 	errno = 0;
 	int_handle->handle = open(int_handle->device_path, O_RDWR | O_CLOEXEC);
 	status = errno2status_init(errno);
