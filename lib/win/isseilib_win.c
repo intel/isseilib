@@ -420,6 +420,13 @@ uint32_t __issei_reopen(IN OUT struct issei_int_handle *int_handle)
 {
 	CloseHandle(int_handle->handle);
 	int_handle->handle = ISSEILIB_INVALID_DEVICE_HANDLE;
+
+	if (int_handle->device_path == NULL)
+	{
+		ERRPRINT(int_handle, "Error in reopen, device_path is NULL\n");
+		return ISSEILIB_ERROR_GENERAL;
+	}
+
 	return create_file(int_handle);
 }
 
