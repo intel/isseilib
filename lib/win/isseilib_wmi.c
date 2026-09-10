@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /*
- * Copyright (C) 2023 Intel Corporation
+ * Copyright (C) 2023-2026 Intel Corporation
  */
 #include <stdio.h>
 #define _WIN32_DCOM
@@ -46,7 +46,7 @@ static uint32_t __issei_wmi_process(struct issei_int_handle *int_handle, const W
 	hr = CoInitializeEx(0, COINIT_MULTITHREADED);
 	if (FAILED(hr))
 	{
-		ERRPRINT(int_handle, "Failed to initialize COM library, error: 0x%x\n", hr);
+		ERRPRINT(int_handle, "Failed to initialize COM library, error: 0x%08lX\n", hr);
 		status = ISSEILIB_ERROR_GENERAL;
 		goto out;
 	}
@@ -55,7 +55,7 @@ static uint32_t __issei_wmi_process(struct issei_int_handle *int_handle, const W
 		RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL);
 	if (FAILED(hr))
 	{
-		ERRPRINT(int_handle, "Failed to initialize security, error: 0x%x\n", hr);
+		ERRPRINT(int_handle, "Failed to initialize security, error: 0x%08lX\n", hr);
 		status = ISSEILIB_ERROR_GENERAL;
 		goto uninit;
 	}
@@ -64,7 +64,7 @@ static uint32_t __issei_wmi_process(struct issei_int_handle *int_handle, const W
 		&IID_IWbemLocator, (LPVOID*)&loc);
 	if (FAILED(hr))
 	{
-		ERRPRINT(int_handle, "Failed to create IWbemLocator, error: 0x%x\n", hr);
+		ERRPRINT(int_handle, "Failed to create IWbemLocator, error: 0x%08lX\n", hr);
 		status = ISSEILIB_ERROR_GENERAL;
 		goto uninit;
 	}
@@ -72,7 +72,7 @@ static uint32_t __issei_wmi_process(struct issei_int_handle *int_handle, const W
 	hr = loc->lpVtbl->ConnectServer(loc, resource, NULL, NULL, 0, 0, 0, 0, &svc);
 	if (FAILED(hr))
 	{
-		ERRPRINT(int_handle, "Failed to connect, error: 0x%x\n", hr);
+		ERRPRINT(int_handle, "Failed to connect, error: 0x%08lX\n", hr);
 		status = ISSEILIB_ERROR_GENERAL;
 		goto loc_release;
 	}
@@ -82,7 +82,7 @@ static uint32_t __issei_wmi_process(struct issei_int_handle *int_handle, const W
 		NULL, &enumerator);
 	if (FAILED(hr))
 	{
-		ERRPRINT(int_handle, "Failed to get enumerator, error: 0x%x\n", hr);
+		ERRPRINT(int_handle, "Failed to get enumerator, error: 0x%08lX\n", hr);
 		status = ISSEILIB_ERROR_GENERAL;
 		goto svc_release;
 	}
@@ -93,7 +93,7 @@ static uint32_t __issei_wmi_process(struct issei_int_handle *int_handle, const W
 		hr = enumerator->lpVtbl->Next(enumerator, WBEM_INFINITE, 1, &cls, &ret);
 		if (FAILED(hr))
 		{
-			ERRPRINT(int_handle, "Failed to next enumerator, error: 0x%x\n", hr);
+			ERRPRINT(int_handle, "Failed to next enumerator, error: 0x%08lX\n", hr);
 			status = ISSEILIB_ERROR_GENERAL;
 			break;
 		}
@@ -109,7 +109,7 @@ static uint32_t __issei_wmi_process(struct issei_int_handle *int_handle, const W
 		hr = cls->lpVtbl->Get(cls, L"InstanceName", 0, &variant, 0, 0);
 		if (FAILED(hr))
 		{
-			ERRPRINT(int_handle, "Failed to get InstanceName, error: 0x%x\n", hr);
+			ERRPRINT(int_handle, "Failed to get InstanceName, error: 0x%08lX\n", hr);
 			status = ISSEILIB_ERROR_GENERAL;
 			break;
 		}
@@ -134,7 +134,7 @@ static uint32_t __issei_wmi_process(struct issei_int_handle *int_handle, const W
 		hr = cls->lpVtbl->Get(cls, name, 0, &variant, 0, 0);
 		if (FAILED(hr))
 		{
-			ERRPRINT(int_handle, "Get failed 0x%x\n", hr);
+			ERRPRINT(int_handle, "Get failed 0x%08lX\n", hr);
 			status = ISSEILIB_ERROR_GENERAL;
 		}
 		else
@@ -270,14 +270,14 @@ static uint32_t __issei_process_fw_status(struct issei_int_handle *int_handle, V
 	SafeArrayGetUBound(safe_array, 1, &upper);
 	if (*register_number < lower || *register_number > upper)
 	{
-		ERRPRINT(int_handle, "Error in wmi get, %d shouild be between %d and %d\n", *register_number, lower, upper);
+		ERRPRINT(int_handle, "Error in wmi get, %u should be between %ld and %ld\n", (unsigned int)*register_number, lower, upper);
 		return ISSEILIB_ERROR_GENERAL;
 	}
 	long l = *register_number;
 	int hr = SafeArrayGetElement(safe_array, &l, &element);
 	if (FAILED(hr))
 	{
-		ERRPRINT(int_handle, "SafeArrayGetElement failed 0x%x\n", hr);
+		ERRPRINT(int_handle, "SafeArrayGetElement failed 0x%08lX\n", hr);
 		return ISSEILIB_ERROR_GENERAL;
 	}
 	*fw_status = element;
@@ -321,7 +321,7 @@ static uint32_t __issei_process_fw_version(struct issei_int_handle *int_handle, 
 	free(fw_ver);
 	if (rc != 4)
 	{
-		ERRPRINT(int_handle, "Error in version parse, error: %u\n", rc);
+		ERRPRINT(int_handle, "Error in version parse, error: %d\n", rc);
 		return ISSEILIB_ERROR_GENERAL;
 	}
 	return ISSEILIB_SUCCESS;
@@ -380,7 +380,7 @@ static uint32_t __issei_process_fwclient(struct issei_int_handle *int_handle, VA
 	SafeArrayGetUBound(safe_array, 1, &upper);
 	if (lower != 0 || upper < *count - 1)
 	{
-		ERRPRINT(int_handle, "Error in wmi get, %d shouild be between %d and %d\n", *count, lower, upper);
+		ERRPRINT(int_handle, "Error in wmi get, %zu should be between %ld and %ld\n", *count, lower, upper);
 		return ISSEILIB_ERROR_GENERAL;
 	}
 
@@ -393,14 +393,14 @@ static uint32_t __issei_process_fwclient(struct issei_int_handle *int_handle, VA
 		hr = SafeArrayGetElement(safe_array, &ind, &p);
 		if (FAILED(hr))
 		{
-			ERRPRINT(int_handle, "SafeArrayGetElement %u failed 0x%x\n", i, hr);
+			ERRPRINT(int_handle, "SafeArrayGetElement %zu failed 0x%08lX\n", i, hr);
 			return ISSEILIB_ERROR_GENERAL;
 		}
 
 		hr = p->lpVtbl->Get(p, L"Mtu", 0, &int_var, 0, 0);
 		if (FAILED(hr))
 		{
-			ERRPRINT(int_handle, "Failed to get Mtu, error: 0x%x\n", hr);
+			ERRPRINT(int_handle, "Failed to get Mtu, error: 0x%08lX\n", hr);
 			status = ISSEILIB_ERROR_GENERAL;
 			break;
 		}
@@ -410,7 +410,7 @@ static uint32_t __issei_process_fwclient(struct issei_int_handle *int_handle, VA
 		hr = p->lpVtbl->Get(p, L"Protocol_Version", 0, &int_var, 0, 0);
 		if (FAILED(hr))
 		{
-			ERRPRINT(int_handle, "Failed to get Protocol_Version, error: 0x%x\n", hr);
+			ERRPRINT(int_handle, "Failed to get Protocol_Version, error: 0x%08lX\n", hr);
 			status = ISSEILIB_ERROR_GENERAL;
 			break;
 		}
@@ -420,7 +420,7 @@ static uint32_t __issei_process_fwclient(struct issei_int_handle *int_handle, VA
 		hr = p->lpVtbl->Get(p, L"Flags", 0, &int_var, 0, 0);
 		if (FAILED(hr))
 		{
-			ERRPRINT(int_handle, "Failed to get Flags, error: 0x%x\n", hr);
+			ERRPRINT(int_handle, "Failed to get Flags, error: 0x%08lX\n", hr);
 			status = ISSEILIB_ERROR_GENERAL;
 			break;
 		}
@@ -430,7 +430,7 @@ static uint32_t __issei_process_fwclient(struct issei_int_handle *int_handle, VA
 		hr = p->lpVtbl->Get(p, L"Uuid", 0, &int_var, 0, 0);
 		if (FAILED(hr))
 		{
-			ERRPRINT(int_handle, "Failed to get Uuid, error: 0x%x\n", hr);
+			ERRPRINT(int_handle, "Failed to get Uuid, error: 0x%08lX\n", hr);
 			status = ISSEILIB_ERROR_GENERAL;
 			break;
 		}
@@ -438,7 +438,7 @@ static uint32_t __issei_process_fwclient(struct issei_int_handle *int_handle, VA
 		VariantClear(&int_var);
 		if (r != RPC_S_OK)
 		{
-			ERRPRINT(int_handle, "Failed to get Uuid, error: 0x%x\n", hr);
+			ERRPRINT(int_handle, "Failed to get Uuid, error: 0x%08lX\n", hr);
 			status = ISSEILIB_ERROR_GENERAL;
 			break;
 		}
@@ -514,14 +514,14 @@ static uint32_t __issei_process_fwclient_exists(struct issei_int_handle *int_han
 		hr = SafeArrayGetElement(safe_array, &ind, &p);
 		if (FAILED(hr))
 		{
-			ERRPRINT(int_handle, "SafeArrayGetElement %u failed 0x%x\n", i, hr);
+			ERRPRINT(int_handle, "SafeArrayGetElement %zu failed 0x%08lX\n", i, hr);
 			return ISSEILIB_ERROR_GENERAL;
 		}
 
 		hr = p->lpVtbl->Get(p, L"Uuid", 0, &int_var, 0, 0);
 		if (FAILED(hr))
 		{
-			ERRPRINT(int_handle, "Failed to get Uuid, error: 0x%x\n", hr);
+			ERRPRINT(int_handle, "Failed to get Uuid, error: 0x%08lX\n", hr);
 			status = ISSEILIB_ERROR_GENERAL;
 			break;
 		}
